@@ -1,0 +1,152 @@
+/**-----------------------------------------------------------
+ * name: nav-header.css
+ * purpose: css styles for the navigation bar & header
+ * author: david kim
+ * last revised: july 6th, 2020
+ * Copyright 2020 David Kim. All rights reserved.
+ -----------------------------------------------------------*/
+
+/* First, header: */
+
+header {
+  height: 60px;
+  width: 100%;
+  background-color: #213761;
+  letter-spacing: 0.3em;
+  display: grid;
+  grid-template-columns: 300px auto 300px;
+}
+
+/* Needed to make sure links don't purple out */
+
+header a {
+  color: inherit;
+}
+
+/* The intersect at the top left corner, between the header and the nav bar */
+
+#nav-intersect {
+  margin: 8px 0;
+  grid-column: 1 / span 1;
+  justify-self: start;
+  align-self: center;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+/* Grid to align the nav-intersect icon and label */
+
+.button-label-grid {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 200;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  align-items: center;
+}
+
+/* Center logo in the header */
+
+#logo {
+  margin: 8px 0;
+  grid-column: 2 / span 1;
+  justify-self: center;
+  align-self: center;
+  height: 44px;
+}
+
+/* For apple.png. Or coffee.png. Or any image logo. */
+
+#logo>h1>a>img {
+  height: 44px;
+}
+
+#logo h1 {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 200;
+}
+
+#logo h1 .initials {
+  font-weight: 800;
+}
+
+/* The project nav at the top right corner */
+
+#project-nav-intersect {
+  margin: 8px 0;
+  grid-column: 3 / span 1;
+  justify-self: end;
+  align-self: center;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+#project-nav-intersect h1 {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 200;
+  vertical-align: middle;
+}
+
+/* Screens smaller than 800px */
+
+@media only screen and (max-width: 800px) {
+  #logo {
+    display: none;
+  }
+  #project-nav-intersect {
+    display: none;
+  }
+  #nav-intersect {
+    grid-column: 1 / span 3;
+  }
+}
+
+/* Now, navigation bar: */
+
+nav, #project-nav {
+  display: none;
+  font-size: 1.5em;
+  background-color: #1c2e52;
+  position: fixed;
+  height: 100%;
+  top: 60px;
+  z-index: 1;
+  --small: 0;
+}
+
+nav>ul, #project-nav>ul {
+  width: 220px;
+  height: 100%;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+nav ul, #project-nav ul {
+  padding: 40px 20px;
+}
+
+nav li {
+  margin-bottom: 50px;
+  text-transform: capitalize;
+  text-align: left;
+  margin-left: 20px;
+}
+
+nav li a, #project-nav li a {
+  color: #fff;
+}
+
+/* Finally, project navigation bar: */
+
+#project-nav {
+  right: 0;
+}
+
+#project-nav li {
+  margin-bottom: 50px;
+  text-align: right;
+  margin-right: 10px;
+}
