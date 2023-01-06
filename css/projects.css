@@ -1,0 +1,130 @@
+@charset "utf-8";
+/**-----------------------------------------------------------
+ * name: projects.css
+ * purpose: styles used for projects.php
+ * author: david kim
+ * last revised: july 8th, 2020
+ * Copyright 2020 David Kim. All rights reserved.
+ -----------------------------------------------------------*/
+
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 32px;
+  grid-template-areas: "projects" "footer";
+}
+
+.projects {
+  grid-area: projects;
+  justify-self: center;
+  align-self: center;
+  min-width: 300px;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+/* Separate layer of abstraction for "container" that holds the
+individual sections together separately */
+
+.container {
+  background-color: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+/* Make the inner container a grid to easily set picture width/position */
+
+.inner-container {
+  padding: 2rem;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+.inner-container img {
+  width: 50%;
+  height: auto;
+}
+
+.project {
+  position: relative;
+  width: 100%;
+  transition: opacity 0.6s ease, transform 0.5s ease;
+}
+
+/* For the links */
+
+.container>a {
+  color: #000;
+  cursor: pointer;
+}
+
+.project::before {
+  content: "";
+  height: 0;
+  display: inline-block;
+  padding-top: 70%;
+  width: 1px;
+  position: relative;
+}
+
+.project h2 {
+  text-align: center;
+  font-size: 32px;
+  word-wrap: break-word;
+  letter-spacing: 4px;
+  font-weight: 400;
+}
+
+.small {
+  grid-row: span 1;
+}
+
+.medium {
+  grid-row: span 2;
+}
+
+.big {
+  grid-row: span 3;
+}
+
+/* Screens smaller than 1600px */
+
+@media only screen and (max-width: 1600px) {
+  .projects {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .project h2 {
+    font-size: 32px;
+  }
+}
+
+/* Screens smaller than 1200px */
+
+@media only screen and (max-width: 1200px) {
+  .projects {
+    grid-template-columns: 1fr 1fr;
+  }
+  .project h2 {
+    font-size: 28px;
+  }
+}
+
+/* Screens smaller than 800px */
+
+@media only screen and (max-width: 800px) {
+  .projects {
+    grid-template-columns: 1fr;
+  }
+  .project h2 {
+    font-size: 24px;
+  }
+}

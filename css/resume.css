@@ -1,0 +1,249 @@
+@charset "utf-8";
+/**-----------------------------------------------------------
+ * name: resume.css
+ * purpose: styles for the single resume page
+ * author: david kim
+ * last revised: january 6th, 2021
+ * Copyright 2020 David Kim. All rights reserved.
+ -----------------------------------------------------------*/
+
+* {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+ul li::before {
+  content: "- ";
+}
+
+/* Because I don't like purple links :P */
+
+a {
+  color: inherit;
+}
+
+a:hover {
+  color: #39d839;
+  opacity: 0.6;
+}
+
+html {
+  font-family: -apple-system, sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  font-size: 14px;
+}
+
+body {
+  font-family: "Open Sans", Calibri, -apple-system;
+  font-weight: 400;
+  font-size: 12px;
+  color: #1a1a1a;
+  /* Simulate a PDF as typically loaded in browsers */
+  background-color: #404040;
+}
+
+article,
+aside,
+footer,
+header,
+nav,
+section {
+  display: block;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.bigger {
+  font-size: 110%;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.inline {
+  padding-right: 2.1rem;
+}
+
+.smaller {
+  font-size: 85%;
+}
+
+.spaced {
+  margin-bottom: 0.4cm;
+}
+
+.subtitle {
+  color: #a0a0a0;
+  font-style: italic;
+}
+
+.unset {
+  font-style: normal;
+}
+
+.main-container {
+  width: 8.5in;
+  height: 11in;
+  margin: 0 auto;
+  background-color: white;
+}
+
+.heading {
+  display: grid;
+  align-items: center;
+  align-content: center;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: 1fr;
+  column-gap: 0.5in;
+  height: 1in;
+  padding: 0.15in;
+  background-color: #e8f0e8;
+}
+
+#name {
+  justify-self: center;
+  font-size: 3.4rem;
+}
+
+#contact {
+  justify-self: center;
+  font-size: 1.2rem;
+  height: auto;
+  text-align: justify;
+}
+
+#contact * {
+  vertical-align: middle;
+}
+
+#contact img {
+  height: 1em;
+  margin: auto 0.2em;
+}
+
+.contents {
+  display: grid;
+  justify-items: stretch;
+  align-items: start;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  column-gap: 1.2cm;
+  height: 10in;
+  padding: 0.5cm 1cm;
+  font-size: 1.2rem;
+}
+
+.section-title {
+  color: #82ce82;
+  text-transform: uppercase;
+  font-size: 1.7rem;
+  border-bottom: 2px solid #82ce82;
+  margin-bottom: 3mm;
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.left-column {
+}
+
+.right-column {
+}
+
+#education {
+  font-size: 0.95em;
+}
+
+#school > span {
+  vertical-align: middle;
+}
+
+.major-related {
+  margin-bottom: 0.5em;
+}
+
+#skills {
+}
+
+#selected-projects {
+  font-size: 0.8em;
+}
+
+.project-title {
+  font-size: 1.25em;
+  margin-top: 0.3cm;
+}
+
+.project-title:hover {
+  text-decoration: #73da73 underline;
+}
+
+#work-experience {
+  font-size: 0.85em;
+}
+
+#extracurriculars {
+  font-size: 0.85em;
+}
+
+#relevant-coursework {
+  font-size: 0.85em;
+}
+
+.courses-grid {
+  display: grid;
+  justify-items: stretch;
+  align-items: center;
+  grid-template-columns: auto auto;
+  column-gap: 2mm;
+}
+
+.course-codes {
+  text-align: left;
+}
+
+.course-names {
+  text-align: left;
+}
+
+.course-codes,
+.course-names {
+  white-space: nowrap;
+}
+
+#bottom-padding {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: 8.5in 11in;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  body {
+    background-color: #ffffff;
+  }
+  .main-container {
+    height: auto;
+  }
+  #bottom-padding {
+    display: block;
+    margin-bottom: 3rem;
+  }
+}

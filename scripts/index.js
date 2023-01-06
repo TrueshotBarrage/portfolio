@@ -1,9 +1,9 @@
 /**-----------------------------------------------------------
  * name: index.js
- * purpose: jQuery scripts for terminal effect on index.php
+ * purpose: jQuery scripts for terminal effect on index.html
  * author: david kim
- * last revised: july 11th, 2020
- * Copyright 2020 David Kim. All rights reserved.
+ * last revised: december 22nd, 2022
+ * Copyright 2022 David Kim. All rights reserved.
  -----------------------------------------------------------*/
 
 $(document).ready(function () {
@@ -113,7 +113,7 @@ function pseudoLinksActivator() {
             $("#code-box").writer(`[Process completed]\n`, () => {
               $("#code-box").writer(`Loading`, () => {
                 $("#code-box").typewriter("...\n", 500, () => {
-                  window.location.href = "profile.php";
+                  window.location.href = "profile.html";
                 }, 100)
               }, 500)
             }, 700)
@@ -129,7 +129,7 @@ function pseudoLinksActivator() {
             $("#code-box").writer(`[Process completed]\n`, () => {
               $("#code-box").writer(`Loading`, () => {
                 $("#code-box").typewriter("...\n", 500, () => {
-                  window.location.href = "projects.php";
+                  window.location.href = "projects.html";
                 }, 100)
               }, 500)
             }, 700)
@@ -145,7 +145,7 @@ function pseudoLinksActivator() {
             $("#code-box").writer(`[Process completed]\n`, () => {
               $("#code-box").writer(`Loading`, () => {
                 $("#code-box").typewriter("...\n", 500, () => {
-                  window.location.href = "blog.php";
+                  window.location.href = "blog.html";
                 }, 100)
               }, 500)
             }, 700)
@@ -193,7 +193,7 @@ function pseudoLinksActivator() {
             $("#code-box").writer(`[Process completed]\n`, () => {
               $("#code-box").writer(`Loading`, () => {
                 $("#code-box").typewriter("...\n", 500, () => {
-                  window.location.href = "resume.php";
+                  window.location.href = "resume.html";
                 }, 100)
               }, 500)
             }, 700)
