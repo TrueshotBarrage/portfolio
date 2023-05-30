@@ -1,0 +1,84 @@
+@charset "utf-8";
+/**-----------------------------------------------------------
+ * name: index.css
+ * purpose: styles for the home page
+ * author: david kim
+ * last revised: july 3rd, 2020
+ * Copyright 2020 David Kim. All rights reserved.
+ -----------------------------------------------------------*/
+
+/* main style, inclusive of everything(!!) on the page. Uses grid. */
+
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 32px;
+  grid-template-areas: "terminal" "footer";
+  column-gap: 10px;
+}
+
+.terminal {
+  grid-area: terminal;
+  justify-self: center;
+  align-self: center;
+  display: block;
+  height: 60vh;
+  min-height: 550px;
+  width: 80vw;
+  min-width: 350px;
+  max-width: 1000px;
+  background-color: #23272d;
+  padding: 10px 14px;
+}
+
+#code-box {
+  font-family: Menlo, DejaVu Sans Mono, Consolas, Lucida Console, monospace;
+  font-weight: 400;
+  color: #72FE44;
+  background-color: inherit;
+  border: none;
+  width: 100%;
+  height: 100%;
+  line-height: normal;
+  white-space: pre-wrap;
+  word-break: keep-all
+}
+
+.pseudo-links {
+  color: #9fe6fd;
+  cursor: pointer;
+}
+
+.pseudo-links:hover {
+  color: #43c8f5;
+}
+
+.timestamp {
+  color: #ffd500;
+}
+
+.pwd {
+  color: #ffc0cb;
+}
+
+#cursor {
+  color: #ff00ff;
+}
+
+/* Screens smaller than 600px width and 400px height */
+
+@media only screen and (max-width: 600px) {
+  .terminal {
+    align-self: start;
+    height: 90vh;
+    width: 100%;
+  }
+}
+
+@media only screen and (max-height: 400px) {
+  .terminal {
+    align-self: start;
+    height: 90vh;
+    width: 100%;
+  }
+}
