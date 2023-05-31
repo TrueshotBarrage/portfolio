@@ -57,7 +57,7 @@ header a {
 
 /* For apple.png. Or coffee.png. Or any image logo. */
 
-#logo>h1>a>img {
+#logo > h1 > a > img {
   height: 44px;
 }
 
@@ -105,8 +105,9 @@ header a {
 
 /* Now, navigation bar: */
 
-nav, #project-nav {
-  display: none;
+nav,
+#project-nav {
+  display: block;
   font-size: 1.5em;
   background-color: #1c2e52;
   position: fixed;
@@ -114,9 +115,15 @@ nav, #project-nav {
   top: 60px;
   z-index: 1;
   --small: 0;
+  transition: margin 0.5s ease;
 }
 
-nav>ul, #project-nav>ul {
+nav {
+  margin-left: -220px;
+}
+
+nav > ul,
+#project-nav > ul {
   width: 220px;
   height: 100%;
   position: relative;
@@ -124,7 +131,8 @@ nav>ul, #project-nav>ul {
   overflow-y: auto;
 }
 
-nav ul, #project-nav ul {
+nav ul,
+#project-nav ul {
   padding: 40px 20px;
 }
 
@@ -135,7 +143,8 @@ nav li {
   margin-left: 20px;
 }
 
-nav li a, #project-nav li a {
+nav li a,
+#project-nav li a {
   color: #fff;
 }
 
@@ -143,6 +152,7 @@ nav li a, #project-nav li a {
 
 #project-nav {
   right: 0;
+  margin-right: -220px;
 }
 
 #project-nav li {
