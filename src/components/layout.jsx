@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "gatsby";
+import { navLinks } from "./links";
 
 const Layout = ({
   pageTitle,
@@ -70,44 +71,6 @@ const Header = ({ handleNavClick, handleProjectNavClick }) => {
     </header>
   );
 };
-
-const navLinks = [
-  {
-    text: "Home",
-    url: "/",
-    newTab: false,
-  },
-  {
-    text: "About Me",
-    url: "/profile",
-    newTab: false,
-  },
-  {
-    text: "Projects",
-    url: "/projects",
-    newTab: false,
-  },
-  {
-    text: "Blog",
-    url: "/blog",
-    newTab: false,
-  },
-  {
-    text: "GitHub",
-    url: "https://github.com/TrueshotBarrage",
-    newTab: true,
-  },
-  {
-    text: "LinkedIn",
-    url: "https://www.linkedin.com/in/davidkim2106/",
-    newTab: true,
-  },
-  {
-    text: "Resume",
-    url: "/resume",
-    newTab: false,
-  },
-];
 
 const Nav = ({ isNavOpen }) => {
   return (
