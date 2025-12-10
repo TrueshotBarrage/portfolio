@@ -1,0 +1,181 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="What is the Gospel? | David Kim">
+  <main>
+    <article class="gospel">
+      <header>
+        <h1>What is the Gospel?</h1>
+        <p class="subtitle">The good news at the heart of Christianity</p>
+      </header>
+
+      <section>
+        <p>
+          The word <strong>"gospel"</strong> means <em>good news</em>. But what is this news, 
+          and why does it matter?
+        </p>
+      </section>
+
+      <section>
+        <h2>The Problem</h2>
+        <p>
+          Every person has sinned and fallen short of God's perfect standard. Sin separates 
+          us from God and leads to death—not just physical, but spiritual and eternal.
+        </p>
+        <blockquote>
+          "For all have sinned and fall short of the glory of God."
+          <cite>— Romans 3:23</cite>
+        </blockquote>
+      </section>
+
+      <section>
+        <h2>The Solution</h2>
+        <p>
+          God, in His great love, sent His Son Jesus Christ into the world. Jesus lived 
+          a perfect life, died on the cross to pay the penalty for our sins, and rose 
+          again on the third day—victorious over sin, death, and all his enemies.
+        </p>
+        <blockquote>
+          "For God so loved the world, that he gave his only Son, that whoever believes 
+          in him should not perish but have eternal life."
+          <cite>— John 3:16</cite>
+        </blockquote>
+      </section>
+
+      <section>
+        <h2>The Promise</h2>
+        <p>
+          For those who believe in Jesus and trust in His finished work, there is now 
+          <strong>no condemnation</strong>. We are forgiven, adopted as children of God, 
+          and promised everlasting joy in His presence.
+        </p>
+        <blockquote>
+          "There is therefore now no condemnation for those who are in Christ Jesus."
+          <cite>— Romans 8:1</cite>
+        </blockquote>
+      </section>
+
+      <section>
+        <h2>The Invitation</h2>
+        <p>
+          This gift is freely offered to all who will receive it by faith. It cannot be 
+          earned—only accepted with a humble and repentant heart.
+        </p>
+        <blockquote>
+          "If you confess with your mouth that Jesus is Lord and believe in your heart 
+          that God raised him from the dead, you will be saved."
+          <cite>— Romans 10:9</cite>
+        </blockquote>
+      </section>
+
+      <section class="learn-more">
+        <h2>Learn More</h2>
+        <ul>
+          <li>
+            <a href="mailto:heydavidkim7@gmail.com?subject=I%20want%20to%20learn%20more%20about%20Christianity">
+              ✉️ Send me an email about Christianity
+            </a>
+          </li>
+          <li>
+            <a href="https://www.desiringgod.org/topics/the-gospel/articles" target="_blank" rel="noopener noreferrer">
+              📖 Gospel articles from Desiring God
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <nav class="back-link">
+        <a href="/">← Back to home</a>
+      </nav>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding: 3rem 1.5rem;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .gospel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  section p {
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+
+  blockquote {
+    margin-top: 1rem;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+
+  blockquote cite {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-style: normal;
+    color: var(--text-secondary);
+  }
+
+  .back-link {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .back-link a {
+    font-size: 0.9rem;
+  }
+
+  .learn-more ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .learn-more li a {
+    display: block;
+    padding: 0.75rem 1rem;
+    background: rgba(122, 162, 247, 0.08);
+    border: 1px solid rgba(122, 162, 247, 0.2);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .learn-more li a:hover {
+    background: rgba(122, 162, 247, 0.15);
+    opacity: 1;
+  }
+</style>

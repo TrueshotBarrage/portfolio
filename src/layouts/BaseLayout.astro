@@ -60,6 +60,7 @@ const { title } = Astro.props;
         <p>
           <strong>Galatians 2:20 (ESV)</strong>
         </p>
+        <a href="/gospel" class="gospel-link">What is the Gospel? →</a>
       </div>
     </div>
   </body>
@@ -244,5 +245,22 @@ const { title } = Astro.props;
 
   .modal-content strong {
     color: var(--accent);
+  }
+
+  .gospel-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    background: rgba(122, 162, 247, 0.1);
+    border: 1px solid rgba(122, 162, 247, 0.3);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .gospel-link:hover {
+    background: rgba(122, 162, 247, 0.2);
+    opacity: 1;
   }
 </style>
