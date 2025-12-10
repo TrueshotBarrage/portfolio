@@ -26,11 +26,70 @@ const { title } = Astro.props;
   </head>
   <body>
     <slot />
-    <a href="/" class="page-logo-link">
+
+    <!-- Logo button -->
+    <button id="logo-btn" class="page-logo-btn" aria-label="About this logo">
       <img src="/favicon_white.png" alt="DK" class="page-logo" />
-    </a>
+    </button>
+
+    <!-- Logo modal -->
+    <div id="logo-modal" class="modal-overlay" aria-hidden="true">
+      <div class="modal-content">
+        <button id="modal-close" class="modal-close" aria-label="Close"
+          >&times;</button
+        >
+        <img src="/favicon_white.png" alt="DK Logo" class="modal-logo" />
+        <h3>About this logo</h3>
+        <p>
+          This logo blends the early Christian <strong>ichthýs</strong> (fish symbol)
+          with my initials,
+          <strong>“DK”</strong>, woven into its form.
+        </p>
+        <p>
+          It reflects how my identity as a Christian is a foundational part of
+          who I am.
+        </p>
+        <p>--</p>
+        <p>
+          <i>
+            I have been crucified with Christ. It is no longer I who live, but
+            Christ who lives in me. And the life I now live in the flesh I live
+            by faith in the Son of God, who loved me and gave himself for me.
+          </i>
+        </p>
+        <p>
+          <strong>Galatians 2:20 (ESV)</strong>
+        </p>
+      </div>
+    </div>
   </body>
 </html>
+
+<script>
+  const logoBtn = document.getElementById("logo-btn");
+  const modal = document.getElementById("logo-modal");
+  const modalClose = document.getElementById("modal-close");
+
+  logoBtn?.addEventListener("click", () => {
+    modal?.setAttribute("aria-hidden", "false");
+  });
+
+  modalClose?.addEventListener("click", () => {
+    modal?.setAttribute("aria-hidden", "true");
+  });
+
+  modal?.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal?.getAttribute("aria-hidden") === "false") {
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+</script>
 
 <style is:global>
   :root {
@@ -88,15 +147,19 @@ const { title } = Astro.props;
     opacity: 0.8;
   }
 
-  .page-logo-link {
+  .page-logo-btn {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
     opacity: 0.4;
     transition: opacity 0.2s ease;
   }
 
-  .page-logo-link:hover {
+  .page-logo-btn:hover {
     opacity: 0.8;
   }
 
@@ -104,5 +167,82 @@ const { title } = Astro.props;
     width: 28px;
     height: 28px;
     display: block;
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .modal-overlay[aria-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 480px;
+    text-align: center;
+    position: relative;
+    transform: translateY(0);
+    transition: transform 0.2s ease;
+  }
+
+  .modal-overlay[aria-hidden="true"] .modal-content {
+    transform: translateY(10px);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.25rem;
+    transition: color 0.2s ease;
+  }
+
+  .modal-close:hover {
+    color: var(--text-primary);
+  }
+
+  .modal-logo {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 1rem;
+  }
+
+  .modal-content h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+  }
+
+  .modal-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-content strong {
+    color: var(--accent);
   }
 </style>
