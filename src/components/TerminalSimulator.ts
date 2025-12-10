@@ -16,6 +16,15 @@ const defaultConfig: TerminalConfig = {
   cursorBlinkSpeed: 530,
 };
 
+// Storage keys for animation state
+const STORAGE_KEYS = {
+  ANIMATION_SEEN: 'terminal_animation_seen',
+  EXTERNAL_NAV: 'terminal_external_nav',
+} as const;
+
+// Flag to signal animation should be skipped
+let skipRequested = false;
+
 /**
  * Promise-based delay utility
  */
@@ -31,7 +40,15 @@ async function typewriter(
   text: string,
   speed: number = defaultConfig.typeSpeed
 ): Promise<void> {
+  if (skipRequested) {
+    element.innerHTML += text;
+    return;
+  }
   for (const char of text) {
+    if (skipRequested) {
+      element.innerHTML += text.slice(text.indexOf(char));
+      return;
+    }
     element.innerHTML += char;
     await delay(speed);
   }
@@ -46,6 +63,7 @@ async function writer(
   delayMs: number = defaultConfig.writerDelay
 ): Promise<void> {
   element.innerHTML += html;
+  if (skipRequested) return;
   await delay(delayMs);
 }
 
@@ -173,12 +191,57 @@ async function handlePseudoLinkClick(
   await delay(300);
   
   if (isExternal) {
+    // Mark that we're navigating externally (will reload)
+    sessionStorage.setItem(STORAGE_KEYS.EXTERNAL_NAV, 'true');
     window.open(href!, '_blank');
     // Re-enable links after external navigation
     setTimeout(() => window.location.reload(), 500);
   } else {
     window.location.href = href!;
   }
+}
+
+/**
+ * Check if skip button should be shown
+ */
+function shouldShowSkipButton(): boolean {
+  return localStorage.getItem(STORAGE_KEYS.ANIMATION_SEEN) === 'true';
+}
+
+/**
+ * Create and show the skip button
+ */
+function createSkipButton(onSkip: () => void): HTMLButtonElement {
+  const button = document.createElement('button');
+  button.id = 'skip-animation-btn';
+  button.textContent = 'Skip Animation';
+  button.addEventListener('click', () => {
+    skipRequested = true;
+    button.remove();
+    onSkip();
+  });
+  return button;
+}
+
+/**
+ * Finalize terminal state after animation
+ */
+function finalizeTerminal(codeBox: HTMLElement): void {
+  // Mark animation as seen
+  localStorage.setItem(STORAGE_KEYS.ANIMATION_SEEN, 'true');
+  // Clear the external nav flag
+  sessionStorage.removeItem(STORAGE_KEYS.EXTERNAL_NAV);
+  
+  // Remove skip button if present
+  document.getElementById('skip-animation-btn')?.remove();
+  
+  // Start cursor blink
+  startCursorBlink('cursor');
+  
+  // Attach click handlers
+  document.querySelectorAll('.pseudo-link').forEach((el) => {
+    el.addEventListener('click', () => handlePseudoLinkClick(el as HTMLElement, codeBox));
+  });
 }
 
 /**
@@ -189,6 +252,17 @@ export async function initTerminal(codeBoxId: string): Promise<void> {
   if (!codeBox) {
     console.error(`Terminal element #${codeBoxId} not found`);
     return;
+  }
+  
+  // Check if we should offer skip option
+  if (shouldShowSkipButton()) {
+    const terminalWrapper = codeBox.closest('.terminal-wrapper');
+    if (terminalWrapper) {
+      const skipBtn = createSkipButton(() => {
+        // Animation will auto-fast-forward due to skipRequested flag
+      });
+      terminalWrapper.appendChild(skipBtn);
+    }
   }
   
   await delay(300);
@@ -211,11 +285,6 @@ export async function initTerminal(codeBoxId: string): Promise<void> {
   await writer(codeBox, '(Try clicking these!)\n', 300);
   await writer(codeBox, prompt() + '<span id="cursor">█</span>', 0);
   
-  // Start cursor blink
-  startCursorBlink('cursor');
-  
-  // Attach click handlers
-  document.querySelectorAll('.pseudo-link').forEach((el) => {
-    el.addEventListener('click', () => handlePseudoLinkClick(el as HTMLElement, codeBox));
-  });
+  // Finalize terminal
+  finalizeTerminal(codeBox);
 }

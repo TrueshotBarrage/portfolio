@@ -1,43 +1,71 @@
-# Astro Starter Kit: Minimal
+# David Kim — Portfolio
 
-```sh
-npm create astro@latest -- --template minimal
+A personal portfolio website featuring an interactive terminal-style interface, built with [Astro](https://astro.build/).
+
+![Astro](https://img.shields.io/badge/Astro-5.16-ff5d01?logo=astro&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6?logo=typescript&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+## ✨ Features
+
+- **Interactive Terminal UI** — Nostalgic command-line aesthetic with typewriter animations and clickable navigation links
+- **Rainbow Cowsay** — Playful ASCII art greeting with dynamic gradient colors
+- **Dark Theme** — Sleek Tokyo Night-inspired color palette
+- **Responsive Design** — Optimized for both desktop and mobile viewing
+
+## 🏗️ Architecture
+
+```
+src/
+├── components/
+│   ├── Terminal.astro        # Terminal window component (UI shell)
+│   └── TerminalSimulator.ts  # Animation engine & interaction logic
+├── layouts/
+│   └── BaseLayout.astro      # Shared HTML structure & global styles
+└── pages/
+    ├── index.astro           # Home page (terminal interface)
+    └── about.astro           # About me page (timeline & skills)
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### Key Components
 
-## 🚀 Project Structure
+| Component | Purpose |
+|-----------|---------|
+| `TerminalSimulator.ts` | Handles typewriter effects, cursor blinking, and pseudo-link navigation |
+| `Terminal.astro` | Provides the macOS-style terminal window frame and styling |
+| `BaseLayout.astro` | Defines CSS custom properties (design tokens) and base typography |
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🚀 Quick Start
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+The dev server runs at **http://localhost:4321**
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## 🎨 Design System
 
-Any static assets, like images, can be placed in the `public/` directory.
+The site uses CSS custom properties for theming:
 
-## 🧞 Commands
+```css
+--terminal-bg: #1a1b26      /* Terminal background */
+--terminal-green: #9ece6a   /* Primary terminal text */
+--terminal-yellow: #e0af68  /* User prompt */
+--terminal-pink: #bb9af7    /* Path & cursor */
+--terminal-cyan: #7dcfff    /* Links */
+--accent: #7aa2f7           /* Accent color */
+```
 
-All commands are run from the root of the project, from a terminal:
+## 📄 License
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+MIT
