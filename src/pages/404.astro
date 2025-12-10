@@ -1,0 +1,379 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="404 — Page Not Found | David Kim">
+  <main>
+    <div class="error-terminal">
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <span class="btn-close"></span>
+          <span class="btn-minimize"></span>
+          <span class="btn-maximize"></span>
+        </div>
+        <span class="terminal-title">error — zsh</span>
+      </div>
+      <div class="terminal-body">
+        <div class="error-content">
+          <pre class="ascii-art">
+┌───────────────────────────────┐
+│                               │
+│   ██╗  ██╗ ██████╗ ██╗  ██╗   │
+│   ██║  ██║██╔═████╗██║  ██║   │
+│   ███████║██║██╔██║███████║   │
+│   ╚════██║████╔╝██║╚════██║   │
+│        ██║╚██████╔╝     ██║   │
+│        ╚═╝ ╚═════╝      ╚═╝   │
+│                               │
+└───────────────────────────────┘</pre>
+
+          <p class="error-line">
+            <span class="prompt-user" id="prompt-user-1">david@portfolio</span>
+            <span class="prompt-sep">:</span>
+            <span class="prompt-path">~</span>
+            <span class="prompt-sep">$</span>
+            <span class="command">cat <span id="attempted-path">/requested/page</span></span>
+          </p>
+          <p class="error-message">
+            <span class="error-label">zsh:</span> no such file or directory: <span class="error-path" id="error-path">/requested/page</span>
+          </p>
+          <p class="suggestion-line" id="suggestion-line" style="display: none;">
+            <span class="suggestion-label">Did you mean:</span>
+            <a id="suggestion-link" href="/" class="suggestion-path"></a>
+            <span class="suggestion-hint">?</span>
+          </p>
+          <p class="error-line thinking">
+            <span class="prompt-user" id="prompt-user-2">david@portfolio</span>
+            <span class="prompt-sep">:</span>
+            <span class="prompt-path">~</span>
+            <span class="prompt-sep">$</span>
+            <span class="command">cd ~</span>
+            <span class="cursor">█</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <a href="/" class="home-link" id="home-link">
+      <span class="arrow">←</span> Return to home
+    </a>
+  </main>
+</BaseLayout>
+
+<script>
+  // Available pages on the site
+  const availablePages = [
+    { path: '/', name: 'home' },
+    { path: '/about', name: 'about' },
+    { path: '/gospel', name: 'gospel' },
+  ];
+
+  // Detect browser for personalized prompt
+  function getBrowserName(): string {
+    const ua = navigator.userAgent;
+    if (ua.includes('Firefox')) return 'firefox';
+    if (ua.includes('Edg')) return 'edge';
+    if (ua.includes('Chrome')) return 'chrome';
+    if (ua.includes('Safari')) return 'safari';
+    return 'browser';
+  }
+
+  // Levenshtein distance for string similarity
+  function levenshtein(a: string, b: string): number {
+    const matrix: number[][] = [];
+    
+    for (let i = 0; i <= b.length; i++) {
+      matrix[i] = [i];
+    }
+    for (let j = 0; j <= a.length; j++) {
+      matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1, // substitution
+            matrix[i][j - 1] + 1,     // insertion
+            matrix[i - 1][j] + 1      // deletion
+          );
+        }
+      }
+    }
+    
+    return matrix[b.length][a.length];
+  }
+
+  // Find the best matching page
+  function findBestMatch(attemptedPath: string): { path: string; name: string; distance: number } | null {
+    const normalized = attemptedPath.toLowerCase().replace(/^\/|\/$/g, '');
+    
+    let bestMatch = null;
+    let bestDistance = Infinity;
+    
+    for (const page of availablePages) {
+      const pageName = page.path === '/' ? '' : page.path.replace(/^\//, '');
+      const distance = levenshtein(normalized, pageName);
+      
+      // Only suggest if reasonably close (distance less than half the string length)
+      if (distance < bestDistance && distance <= Math.max(normalized.length, pageName.length) / 2) {
+        bestDistance = distance;
+        bestMatch = { ...page, distance };
+      }
+    }
+    
+    return bestMatch;
+  }
+
+  // Initialize 404 page with dynamic content
+  function init404() {
+    const browser = getBrowserName();
+    const attemptedPath = window.location.pathname;
+    
+    // Update prompt with browser name
+    const promptUsers = document.querySelectorAll('.prompt-user');
+    promptUsers.forEach(el => {
+      el.textContent = `david@${browser}`;
+    });
+    
+    // Update the attempted path in the terminal
+    const attemptedPathEl = document.getElementById('attempted-path');
+    const errorPathEl = document.getElementById('error-path');
+    if (attemptedPathEl) attemptedPathEl.textContent = attemptedPath;
+    if (errorPathEl) errorPathEl.textContent = attemptedPath;
+    
+    // Find and display suggestion
+    const bestMatch = findBestMatch(attemptedPath);
+    const suggestionLine = document.getElementById('suggestion-line');
+    const suggestionLink = document.getElementById('suggestion-link') as HTMLAnchorElement;
+    const homeLink = document.getElementById('home-link') as HTMLAnchorElement;
+    
+    if (bestMatch && suggestionLine && suggestionLink) {
+      suggestionLine.style.display = 'block';
+      suggestionLink.href = bestMatch.path;
+      suggestionLink.textContent = bestMatch.path === '/' ? '/ (home)' : bestMatch.path;
+      
+      // Also update the home link to suggest the best match
+      if (homeLink && bestMatch.path !== '/') {
+        homeLink.href = bestMatch.path;
+        homeLink.innerHTML = `<span class="arrow">←</span> Go to ${bestMatch.name}`;
+      }
+    }
+  }
+
+  // Run on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init404);
+  } else {
+    init404();
+  }
+</script>
+
+<style>
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 2rem;
+    padding: 2rem;
+  }
+
+  .error-terminal {
+    width: 100%;
+    max-width: 600px;
+    background: var(--terminal-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 25px 50px -12px rgba(0, 0, 0, 0.5),
+      0 0 100px rgba(247, 118, 142, 0.1);
+  }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .terminal-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .terminal-buttons span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .btn-close {
+    background: #ff5f57;
+  }
+
+  .btn-minimize {
+    background: #ffbd2e;
+  }
+
+  .btn-maximize {
+    background: #28c840;
+  }
+
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .terminal-body {
+    font-family:
+      "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco, "Courier New",
+      monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 20px;
+  }
+
+  .error-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ascii-art {
+    color: var(--terminal-red);
+    font-size: 11px;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .error-line {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .prompt-user {
+    color: var(--terminal-yellow);
+  }
+
+  .prompt-sep {
+    color: var(--text-secondary);
+  }
+
+  .prompt-path {
+    color: var(--terminal-pink);
+  }
+
+  .command {
+    color: var(--terminal-green);
+    margin-left: 0.5rem;
+  }
+
+  .error-message {
+    color: var(--terminal-red);
+    margin-left: 0;
+  }
+
+  .error-label {
+    color: var(--terminal-red);
+    font-weight: 500;
+  }
+
+  .error-path {
+    color: var(--terminal-cyan);
+  }
+
+  .suggestion-line {
+    color: var(--terminal-yellow);
+    margin-top: 0.25rem;
+  }
+
+  .suggestion-label {
+    color: var(--terminal-yellow);
+  }
+
+  .suggestion-path {
+    color: var(--terminal-cyan);
+    margin-left: 0.5rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .suggestion-path:hover {
+    color: var(--terminal-text);
+  }
+
+  .suggestion-hint {
+    color: var(--text-secondary);
+  }
+
+  .thinking {
+    margin-top: 0.5rem;
+  }
+
+  .cursor {
+    color: var(--terminal-pink);
+    animation: blink 1s step-end infinite;
+    margin-left: 0.5rem;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: rgba(122, 162, 247, 0.1);
+    border: 1px solid rgba(122, 162, 247, 0.3);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .home-link:hover {
+    background: rgba(122, 162, 247, 0.2);
+    opacity: 1;
+    transform: translateX(-4px);
+  }
+
+  .arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .home-link:hover .arrow {
+    transform: translateX(-4px);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    main {
+      padding: 1rem;
+    }
+
+    .ascii-art {
+      font-size: 8px;
+    }
+
+    .terminal-body {
+      font-size: 12px;
+      padding: 16px;
+    }
+  }
+</style>
