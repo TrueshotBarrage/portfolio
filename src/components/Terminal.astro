@@ -22,9 +22,27 @@
 <script>
   import { initTerminal } from "./TerminalSimulator";
 
-  // Initialize terminal when DOM is ready
-  document.addEventListener("DOMContentLoaded", () => {
-    initTerminal("code-box");
+  function startTerminal() {
+    const codeBox = document.getElementById("code-box");
+    if (codeBox) {
+      // Clear any existing content from previous session
+      codeBox.innerHTML = "";
+      initTerminal("code-box");
+    }
+  }
+
+  // Initialize on first load
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startTerminal);
+  } else {
+    startTerminal();
+  }
+
+  // Reinitialize when navigating back (bfcache restoration)
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+      startTerminal();
+    }
   });
 </script>
 
@@ -90,8 +108,9 @@
   }
 
   .terminal-body {
-    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco,
-      "Courier New", monospace;
+    font-family:
+      "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco, "Courier New",
+      monospace;
     font-size: 14px;
     line-height: 1.6;
     color: var(--terminal-green);
@@ -152,8 +171,9 @@
     bottom: 1rem;
     right: 1rem;
     padding: 0.5rem 1rem;
-    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco,
-      "Courier New", monospace;
+    font-family:
+      "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco, "Courier New",
+      monospace;
     font-size: 12px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
