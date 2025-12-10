@@ -1,33 +1,50 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="About | David Kim">
   <main>
     <article class="about">
       <header class="hero">
-        <img 
-          src="/images/aboutme.jpg" 
-          alt="Photo of David Kim" 
+        <img
+          src="/images/aboutme3.jpg"
+          alt="Photo of David Kim"
           class="avatar"
         />
         <div class="hero-text">
           <h1>David Kim</h1>
-          <p class="subtitle">Software Engineer & Robotics Researcher</p>
+          <p class="subtitle">Software Engineer</p>
         </div>
       </header>
 
       <section class="bio">
         <p>
-          I'm a Master's student in Computer Science at 
-          <strong class="highlight cornell">Cornell University</strong>, and a researcher in the 
-          <a href="https://emprise.cs.cornell.edu/" target="_blank">EmPRISE Lab</a>, 
-          working with assistive robots to improve the lives of people with disabilities.
+          Hi! I'm Dave, a Software Engineer at
+          <strong class="highlight valon">Valon</strong>, and a
+          <strong class="highlight cornell">Cornell University</strong> alum with
+          an M.S. in Computer Science. I previously worked as a Consultant at <strong
+            class="highlight ey">EY</strong
+          > and did research in the <strong class="highlight emprise"
+            >EmPRISE Lab</strong
+          >, <a
+            href="https://scholar.google.com/citations?user=NwqMTYkAAAAJ"
+            target="_blank"
+            rel="noopener noreferrer"
+            >working with assistive robots to improve the lives of people with
+            disabilities.</a
+          >
         </p>
         <p>
-          In my free time, I love playing board games, practicing jazz piano, and biking 
-          around campus. I'm also actively involved with my church community. Whenever I 
-          get a chance, I try to travel around the United States to meet up with friends.
+          In my free time, I love playing board games, practicing jazz piano,
+          and cafe hopping around the city. I'm also actively involved with my
+          church community at
+          <a
+            href="https://firstnyc.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><strong class="highlight first">First Baptist Church</strong></a
+          >. Whenever I get a chance, I try to travel around the United States
+          to meet up with friends.
         </p>
       </section>
 
@@ -37,22 +54,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="entry">
             <span class="date">Aug 2018</span>
             <div class="content">
-              <strong>Cornell University</strong>
-              <p>B.S. Computer Science & B.S. Electrical and Computer Engineering</p>
+              <strong class="highlight cornell">Cornell University</strong>
+              <p>
+                B.S. Computer Science & B.S. Electrical and Computer Engineering
+              </p>
             </div>
           </div>
           <div class="entry">
             <span class="date">May 2020</span>
             <div class="content">
               <strong class="highlight wasabi">Wasabi Technologies</strong>
-              <p>Summer Internship — Hot cloud storage</p>
+              <p>SWE Intern — Hot cloud storage</p>
             </div>
           </div>
           <div class="entry">
             <span class="date">Jan 2021</span>
             <div class="content">
               <strong class="highlight amazon">Amazon Robotics</strong>
-              <p>Spring Co-op — Embedded systems</p>
+              <p>SWE Co-op — Embedded systems</p>
             </div>
           </div>
           <div class="entry">
@@ -65,8 +84,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="entry">
             <span class="date">Aug 2021</span>
             <div class="content">
-              <strong>EmPRISE Lab</strong>
-              <p>Research assistant — Assistive robotics</p>
+              <strong class="highlight emprise">EmPRISE Lab</strong>
+              <p>Research Assistant — Assistive robotics</p>
+            </div>
+          </div>
+          <div class="entry">
+            <span class="date">Aug 2022</span>
+            <div class="content">
+              <strong class="highlight cornell">Cornell University</strong>
+              <p>M.S. Computer Science</p>
+            </div>
+          </div>
+          <div class="entry">
+            <span class="date">Aug 2023</span>
+            <div class="content">
+              <strong class="highlight ey">EY</strong>
+              <p>Consultant — Financial services</p>
+            </div>
+          </div>
+          <div class="entry">
+            <span class="date">Oct 2025</span>
+            <div class="content">
+              <strong class="highlight valon">Valon</strong>
+              <p>Software Engineer — ValonOS</p>
             </div>
           </div>
         </div>
@@ -75,12 +115,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <section class="skills">
         <h2>Skills</h2>
         <div class="skill-group">
-          <h3>Languages</h3>
-          <p>Python • TypeScript • Java • C/C++ • OCaml • SQL</p>
+          <h3>Languages & Frameworks</h3>
+          <p>Python • React • Java • Swift</p>
         </div>
         <div class="skill-group">
-          <h3>Technologies</h3>
-          <p>Git • Linux • Docker • ROS • React • Node.js</p>
+          <h3>Books</h3>
+          <p>The Secret Key to Heaven • Brave New World • Screwtape Letters</p>
         </div>
       </section>
 
@@ -166,6 +206,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .amazon {
     color: #ff9900;
+  }
+
+  .ey {
+    color: #ffe600;
+  }
+
+  .valon {
+    color: #48a3ff;
   }
 
   .timeline-entries {

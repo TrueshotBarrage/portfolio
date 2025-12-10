@@ -1,6 +1,6 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Terminal from '../components/Terminal.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Terminal from "../components/Terminal.astro";
 ---
 
 <BaseLayout title="David Kim">
@@ -8,7 +8,12 @@ import Terminal from '../components/Terminal.astro';
     <Terminal />
   </main>
   <footer>
-    <p>© {new Date().getFullYear()} David Kim. All rights reserved.</p>
+    <p>
+      © {new Date().getFullYear()} David Kim. All rights reserved. Built with
+      <a href="https://astro.build/" target="_blank" rel="noopener noreferrer">
+        Astro</a
+      >.
+    </p>
   </footer>
 </BaseLayout>
 
