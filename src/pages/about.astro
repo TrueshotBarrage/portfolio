@@ -1,0 +1,229 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About | David Kim">
+  <main>
+    <article class="about">
+      <header class="hero">
+        <img 
+          src="/images/aboutme.jpg" 
+          alt="Photo of David Kim" 
+          class="avatar"
+        />
+        <div class="hero-text">
+          <h1>David Kim</h1>
+          <p class="subtitle">Software Engineer & Robotics Researcher</p>
+        </div>
+      </header>
+
+      <section class="bio">
+        <p>
+          I'm a Master's student in Computer Science at 
+          <strong class="highlight cornell">Cornell University</strong>, and a researcher in the 
+          <a href="https://emprise.cs.cornell.edu/" target="_blank">EmPRISE Lab</a>, 
+          working with assistive robots to improve the lives of people with disabilities.
+        </p>
+        <p>
+          In my free time, I love playing board games, practicing jazz piano, and biking 
+          around campus. I'm also actively involved with my church community. Whenever I 
+          get a chance, I try to travel around the United States to meet up with friends.
+        </p>
+      </section>
+
+      <section class="timeline">
+        <h2>Timeline</h2>
+        <div class="timeline-entries">
+          <div class="entry">
+            <span class="date">Aug 2018</span>
+            <div class="content">
+              <strong>Cornell University</strong>
+              <p>B.S. Computer Science & B.S. Electrical and Computer Engineering</p>
+            </div>
+          </div>
+          <div class="entry">
+            <span class="date">May 2020</span>
+            <div class="content">
+              <strong class="highlight wasabi">Wasabi Technologies</strong>
+              <p>Summer Internship — Hot cloud storage</p>
+            </div>
+          </div>
+          <div class="entry">
+            <span class="date">Jan 2021</span>
+            <div class="content">
+              <strong class="highlight amazon">Amazon Robotics</strong>
+              <p>Spring Co-op — Embedded systems</p>
+            </div>
+          </div>
+          <div class="entry">
+            <span class="date">Jun 2021</span>
+            <div class="content">
+              <strong class="highlight amazon">Amazon</strong>
+              <p>SDE Intern — Last Mile Planning simulations</p>
+            </div>
+          </div>
+          <div class="entry">
+            <span class="date">Aug 2021</span>
+            <div class="content">
+              <strong>EmPRISE Lab</strong>
+              <p>Research assistant — Assistive robotics</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="skills">
+        <h2>Skills</h2>
+        <div class="skill-group">
+          <h3>Languages</h3>
+          <p>Python • TypeScript • Java • C/C++ • OCaml • SQL</p>
+        </div>
+        <div class="skill-group">
+          <h3>Technologies</h3>
+          <p>Git • Linux • Docker • ROS • React • Node.js</p>
+        </div>
+      </section>
+
+      <nav class="back-link">
+        <a href="/">← Back to terminal</a>
+      </nav>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding: 3rem 1.5rem;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .about {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .hero {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 30px rgba(122, 162, 247, 0.2);
+  }
+
+  .hero-text h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .bio p {
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+  }
+
+  h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .highlight {
+    font-weight: 500;
+  }
+
+  .cornell {
+    color: #b31b1b;
+  }
+
+  .wasabi {
+    color: #1bc01b;
+  }
+
+  .amazon {
+    color: #ff9900;
+  }
+
+  .timeline-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry .content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+  }
+
+  .skill-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .skill-group p {
+    color: var(--text-primary);
+  }
+
+  .back-link {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .back-link a {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .entry {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+
+    .date {
+      font-weight: 500;
+      color: var(--accent);
+    }
+  }
+</style>
