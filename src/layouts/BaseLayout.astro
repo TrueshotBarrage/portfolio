@@ -90,6 +90,30 @@ const { title } = Astro.props;
       modal.setAttribute("aria-hidden", "true");
     }
   });
+
+  // Dynamic favicon based on color scheme
+  const faviconLight = "/favicon_sharpened_bold.png"; // Blue logo for light mode
+  const faviconDark = "/favicon_white.png"; // White logo for dark mode
+
+  function updateFavicon() {
+    const favicon = document.querySelector(
+      'link[rel="icon"]',
+    ) as HTMLLinkElement;
+    if (favicon) {
+      const isDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      favicon.href = isDarkMode ? faviconDark : faviconLight;
+    }
+  }
+
+  // Set initial favicon
+  updateFavicon();
+
+  // Listen for color scheme changes
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", updateFavicon);
 </script>
 
 <style is:global>
