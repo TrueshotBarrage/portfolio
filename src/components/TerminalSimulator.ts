@@ -25,11 +25,29 @@ const STORAGE_KEYS = {
 // Flag to signal animation should be skipped
 let skipRequested = false;
 
+// The in-flight run, aborted when a new one starts (e.g. a bfcache restore
+// resumes the old run's timers while the pageshow handler starts a fresh one)
+let activeRun: AbortController | null = null;
+let cursorInterval: ReturnType<typeof setInterval> | undefined;
+
 /**
- * Promise-based delay utility
+ * Promise-based delay utility. Rejects once the current run is aborted, which
+ * unwinds the stale animation instead of letting it keep writing.
  */
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  const signal = activeRun?.signal;
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) return reject(signal.reason);
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timer);
+        reject(signal.reason);
+      },
+      { once: true }
+    );
+  });
 }
 
 /**
@@ -75,7 +93,8 @@ function startCursorBlink(cursorId: string, speed: number = defaultConfig.cursor
   if (!cursor) return;
   
   let visible = true;
-  setInterval(() => {
+  clearInterval(cursorInterval);
+  cursorInterval = setInterval(() => {
     cursor.style.opacity = visible ? '0' : '1';
     visible = !visible;
   }, speed);
@@ -262,6 +281,24 @@ export async function initTerminal(codeBoxId: string): Promise<void> {
     return;
   }
 
+  // Cancel any previous run and reset its leftovers
+  activeRun?.abort();
+  const run = new AbortController();
+  activeRun = run;
+  skipRequested = false;
+  clearInterval(cursorInterval);
+  document.getElementById('skip-animation-btn')?.remove();
+  codeBox.innerHTML = '';
+
+  try {
+    await runAnimation(codeBox);
+  } catch (error) {
+    // A newer run took over, so this one just stops
+    if (!run.signal.aborted) throw error;
+  }
+}
+
+async function runAnimation(codeBox: HTMLElement): Promise<void> {
   const options: TerminalOptions = {
     aboutHref: codeBox.dataset.aboutHref ?? '/about',
     skipLabel: codeBox.dataset.skipLabel ?? 'Skip Animation',

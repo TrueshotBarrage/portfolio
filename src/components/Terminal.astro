@@ -35,10 +35,8 @@ const { lang } = Astro.props;
   import { initTerminal } from "./TerminalSimulator";
 
   function startTerminal() {
-    const codeBox = document.getElementById("code-box");
-    if (codeBox) {
-      // Clear any existing content from previous session
-      codeBox.innerHTML = "";
+    // initTerminal cancels any in-flight run and clears the box itself
+    if (document.getElementById("code-box")) {
       initTerminal("code-box");
     }
   }
