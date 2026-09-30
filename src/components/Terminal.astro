@@ -2,7 +2,15 @@
 /**
  * Terminal Component
  * A nostalgic terminal-style interface with typewriter animations.
+ * The terminal output stays English in every language, like a real shell.
  */
+import { getContent, localizePath, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
 ---
 
 <div class="terminal-wrapper">
@@ -15,7 +23,11 @@
       </div>
       <span class="terminal-title">davidkim — zsh</span>
     </div>
-    <pre id="code-box" class="terminal-body"></pre>
+    <pre
+      id="code-box"
+      class="terminal-body"
+      data-about-href={localizePath("/about", lang)}
+      data-skip-label={getContent(lang).home.skipAnimation}></pre>
   </div>
 </div>
 

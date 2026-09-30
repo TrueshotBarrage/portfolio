@@ -1,0 +1,42 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Terminal from "../components/Terminal.astro";
+import { getContent, fill, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getContent(lang).home;
+const footer = fill(t.footer, {
+  year: new Date().getFullYear(),
+  astro: `<a href="https://astro.build/" target="_blank" rel="noopener noreferrer">Astro</a>`,
+});
+---
+
+<BaseLayout title={t.title} lang={lang}>
+  <main>
+    <Terminal lang={lang} />
+  </main>
+  <footer>
+    <p set:html={footer} />
+  </footer>
+</BaseLayout>
+
+<style>
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  footer {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+</style>

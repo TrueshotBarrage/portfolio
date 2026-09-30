@@ -1,0 +1,789 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getContent, dateLocale, localizePath, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getContent(lang).piano;
+
+interface MonthRange {
+  start: number;
+  end: number;
+  openEnded?: boolean;
+}
+
+// Month 1 of the roadmap is Oct 2026
+const ROADMAP_START = { year: 2026, month: 9 };
+
+const monthFormatter = new Intl.DateTimeFormat(dateLocale(lang), {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function roadmapMonth(n: number): string {
+  return monthFormatter.format(
+    new Date(Date.UTC(ROADMAP_START.year, ROADMAP_START.month + n - 1)),
+  );
+}
+
+function formatMonths({ start, end, openEnded }: MonthRange): string {
+  const plus = openEnded ? "+" : "";
+  return `${roadmapMonth(start)} – ${roadmapMonth(end)}${plus} · ${t.monthRange(start, end, plus)}`;
+}
+
+type SheetId = keyof typeof t.sheets;
+
+// Content adapted from the Advanced Piano Progression Roadmap PDF.
+// Copy lives in src/i18n, zipped with this data by index or id.
+const routine = [
+  { time: "0:00", minutes: 10 },
+  { time: "0:10", minutes: 25 },
+  { time: "0:35", minutes: 15 },
+  { time: "0:50", minutes: 10 },
+].map((block, i) => ({ ...block, ...t.routine[i] }));
+
+const milestones: (MonthRange & { sheetId?: SheetId })[] = [
+  { start: 1, end: 8, sheetId: "nocturne" },
+  { start: 9, end: 18 },
+  { start: 19, end: 32 },
+  { start: 33, end: 55, openEnded: true },
+];
+
+const czernyPhases: { months: MonthRange; exercises: [SheetId, SheetId] }[] = [
+  { months: { start: 1, end: 3 }, exercises: ["no-1", "no-11"] },
+  { months: { start: 4, end: 6 }, exercises: ["no-12", "no-39"] },
+];
+
+const sheets: { id: SheetId; pdf: string; hasWorkbook: boolean }[] = [
+  { id: "no-1", pdf: "/piano/czerny-740-no-01.pdf", hasWorkbook: true },
+  { id: "no-11", pdf: "/piano/czerny-740-no-11.pdf", hasWorkbook: true },
+  { id: "no-12", pdf: "/piano/czerny-740-no-12.pdf", hasWorkbook: true },
+  { id: "no-39", pdf: "/piano/czerny-740-no-39.pdf", hasWorkbook: true },
+  { id: "nocturne", pdf: "/piano/chopin-nocturne-c-sharp-minor.pdf", hasWorkbook: false },
+];
+
+// Checklist storage keys use these ids, so progress is shared across languages
+const workbook = Object.entries(t.workbook).map(([groupId, group]) => ({
+  id: groupId,
+  label: group.label,
+  items: Object.entries(group.items).map(([itemId, label]) => ({ id: itemId, label })),
+}));
+---
+
+<BaseLayout title={t.title} lang={lang} noindex>
+  <main>
+    <article class="piano">
+      <header>
+        <h1>{t.heading}</h1>
+        <p class="subtitle">{t.subtitle}</p>
+      </header>
+
+      <section>
+        <h2>{t.routineHeading}</h2>
+        <p class="lead">{t.routineLead}</p>
+        <ol class="routine">
+          {
+            routine.map((block) => (
+              <li class="routine-block" style={`--minutes: ${block.minutes}`}>
+                <div class="routine-bar">
+                  <span>{t.minutes(block.minutes)}</span>
+                </div>
+                <div class="routine-text">
+                  <span class="routine-time">{block.time}</span>
+                  <h3>{block.focus}</h3>
+                  <p>{block.objective}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section>
+        <h2>{t.milestonesHeading}</h2>
+        <ol class="milestones">
+          {
+            milestones.map((m, i) => (
+              <li class="milestone">
+                <span class="milestone-index">{i + 1}</span>
+                <div>
+                  <span class="milestone-months">{formatMonths(m)}</span>
+                  <h3>
+                    <span class="composer">{t.milestones[i].composer}</span> {t.milestones[i].piece}
+                  </h3>
+                  <p>{t.milestones[i].intent}</p>
+                  {m.sheetId && (
+                    <a href={`#${m.sheetId}`} class="sheet-jump" data-sheet={m.sheetId}>
+                      {t.sheetJump}
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section>
+        <h2>{t.czernyHeading}</h2>
+        <p class="lead">{t.czernyLead}</p>
+        <div class="phases">
+          {
+            czernyPhases.map((phase, i) => (
+              <div class="phase">
+                <span class="phase-months">{formatMonths(phase.months)}</span>
+                <h3>{t.phases[i].name}</h3>
+                <ul class="phase-schedule">
+                  {[t.days.mwf, t.days.tts].map((days, j) => (
+                    <li>
+                      <span>{days}</span>
+                      <strong>{t.sheets[phase.exercises[j]].tab}</strong>
+                    </li>
+                  ))}
+                </ul>
+                <ul class="phase-targets">
+                  {t.phases[i].targets.map((target, j) => (
+                    <li>
+                      <strong>
+                        {t.sheets[phase.exercises[j]].tab} · {target.label}
+                      </strong>
+                      <span>{target.detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="sheet-music">
+        <h2>{t.sheetsHeading}</h2>
+        <div class="tabs" role="tablist" aria-label={t.sheetsHeading}>
+          {
+            sheets.map((sheet, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${sheet.id}`}
+                aria-controls={`panel-${sheet.id}`}
+                aria-selected={i === 0 ? "true" : "false"}
+                data-sheet={sheet.id}
+              >
+                {t.sheets[sheet.id].tab}
+              </button>
+            ))
+          }
+        </div>
+
+        {
+          sheets.map((sheet, i) => {
+            const copy = t.sheets[sheet.id];
+            return (
+              <div
+                class="sheet-panel"
+                role="tabpanel"
+                id={`panel-${sheet.id}`}
+                aria-labelledby={`tab-${sheet.id}`}
+                data-sheet={sheet.id}
+                hidden={i !== 0}
+              >
+                <div class="sheet-info">
+                  <div>
+                    <h3>{copy.title}</h3>
+                    <p class="sheet-subtitle">{copy.subtitle}</p>
+                    {copy.tempo && <p class="sheet-tempo">{copy.tempo}</p>}
+                    {copy.focus && <p class="sheet-focus">{copy.focus}</p>}
+                  </div>
+
+                  {sheet.hasWorkbook && (
+                    <div class="workbook">
+                      <div class="workbook-header">
+                        <span>{t.checklistHeading}</span>
+                        <button type="button" class="workbook-reset" data-sheet={sheet.id}>
+                          {t.checklistReset}
+                        </button>
+                      </div>
+                      {workbook.map((group) => (
+                        <fieldset>
+                          <legend>{group.label}</legend>
+                          {group.items.map((item) => (
+                            <label>
+                              <input
+                                type="checkbox"
+                                data-key={`${sheet.id}:${group.id}:${item.id}`}
+                              />
+                              <span>{item.label}</span>
+                            </label>
+                          ))}
+                        </fieldset>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <iframe
+                  class="pdf-frame"
+                  title={t.sheetFrameTitle(copy.title)}
+                  data-src={`${sheet.pdf}#view=FitH`}
+                  src={i === 0 ? `${sheet.pdf}#view=FitH` : undefined}
+                />
+
+                <div class="pdf-actions">
+                  <a href={sheet.pdf} target="_blank" rel="noopener" class="pdf-open">
+                    {t.openPdf}
+                  </a>
+                  <a href={sheet.pdf} download>
+                    {t.download}
+                  </a>
+                </div>
+              </div>
+            );
+          })
+        }
+      </section>
+
+      <nav class="back-link">
+        <a href="/piano/piano-roadmap.pdf" target="_blank" rel="noopener">
+          {t.originalRoadmap}
+        </a>
+        <a href={localizePath("/", lang)}>{t.backLink}</a>
+      </nav>
+    </article>
+  </main>
+</BaseLayout>
+
+<script>
+  const STORAGE_KEY = "piano-workbook";
+
+  const tabs = document.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+  const panels = document.querySelectorAll<HTMLElement>(".sheet-panel");
+  const checkboxes = document.querySelectorAll<HTMLInputElement>(
+    ".workbook input[type=checkbox]",
+  );
+
+  function selectSheet(id: string, updateHash = true) {
+    const panel = document.getElementById(`panel-${id}`);
+    if (!panel) return;
+
+    tabs.forEach((tab) =>
+      tab.setAttribute("aria-selected", String(tab.dataset.sheet === id)),
+    );
+    panels.forEach((p) => (p.hidden = p !== panel));
+
+    // Load PDFs only when their tab is first opened
+    const frame = panel.querySelector<HTMLIFrameElement>(".pdf-frame");
+    if (frame && !frame.getAttribute("src") && frame.dataset.src) {
+      frame.src = frame.dataset.src;
+    }
+
+    if (updateHash) history.replaceState(null, "", `#${id}`);
+  }
+
+  tabs.forEach((tab) =>
+    tab.addEventListener("click", () => selectSheet(tab.dataset.sheet!)),
+  );
+
+  document.querySelectorAll<HTMLAnchorElement>(".sheet-jump").forEach((link) =>
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      selectSheet(link.dataset.sheet!);
+      document.getElementById("sheet-music")?.scrollIntoView({ behavior: "smooth" });
+    }),
+  );
+
+  const initial = location.hash.slice(1);
+  if (initial) selectSheet(initial, false);
+
+  // Checklist progress is a per-browser convenience, so storage failures are ignored
+  function readProgress(): Record<string, boolean> {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  function writeProgress(progress: Record<string, boolean>) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    } catch {
+      // ignore
+    }
+  }
+
+  const progress = readProgress();
+  checkboxes.forEach((box) => {
+    box.checked = Boolean(progress[box.dataset.key!]);
+    box.addEventListener("change", () => {
+      progress[box.dataset.key!] = box.checked;
+      writeProgress(progress);
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>(".workbook-reset").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      checkboxes.forEach((box) => {
+        if (box.dataset.key!.startsWith(`${btn.dataset.sheet}:`)) {
+          box.checked = false;
+          delete progress[box.dataset.key!];
+        }
+      });
+      writeProgress(progress);
+    }),
+  );
+</script>
+
+<style>
+  main {
+    padding: 3rem 1.5rem;
+    width: 100%;
+    max-width: 860px;
+  }
+
+  .piano {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  header {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .lead {
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Daily routine: bar widths are proportional to minutes */
+  .routine {
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .routine-block {
+    flex: var(--minutes) 1 0;
+    min-width: 0;
+  }
+
+  .routine-bar {
+    height: 2.25rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bg-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .routine-block:nth-child(1) .routine-bar {
+    background: var(--terminal-cyan);
+  }
+  .routine-block:nth-child(2) .routine-bar {
+    background: var(--terminal-pink);
+  }
+  .routine-block:nth-child(3) .routine-bar {
+    background: var(--terminal-green);
+  }
+  .routine-block:nth-child(4) .routine-bar {
+    background: var(--terminal-yellow);
+  }
+
+  .routine-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .routine-text h3 {
+    font-size: 0.9rem;
+    margin: 0.15rem 0 0.35rem;
+  }
+
+  .routine-text p {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  /* Milestones */
+  .milestones {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 1px solid rgba(122, 162, 247, 0.25);
+    margin-left: 0.9rem;
+  }
+
+  .milestone {
+    display: flex;
+    gap: 1rem;
+    padding: 0 0 1.5rem 0;
+    margin-left: -0.9rem;
+  }
+
+  .milestone:last-child {
+    padding-bottom: 0;
+  }
+
+  .milestone-index {
+    flex: none;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--bg-primary);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+
+  .milestone:first-child .milestone-index {
+    background: var(--accent);
+    color: var(--bg-primary);
+  }
+
+  .milestone-months {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .milestone h3 {
+    margin: 0.2rem 0 0.4rem;
+    line-height: 1.4;
+  }
+
+  .composer {
+    color: var(--accent);
+  }
+
+  .milestone p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  .sheet-jump {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  /* Czerny phases */
+  .phases {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .phase {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .phase-months {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .phase h3 {
+    margin: 0.2rem 0 1rem;
+  }
+
+  .phase ul {
+    list-style: none;
+  }
+
+  .phase-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .phase-schedule li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .phase-schedule strong {
+    color: var(--terminal-yellow);
+    font-weight: 500;
+  }
+
+  .phase-targets {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .phase-targets li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .phase-targets strong {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .phase-targets span {
+    color: var(--text-secondary);
+  }
+
+  /* Sheet music tabs */
+  .tabs {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .tabs button {
+    font: inherit;
+    font-size: 0.875rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+  }
+
+  .tabs button:hover {
+    color: var(--text-primary);
+  }
+
+  .tabs button[aria-selected="true"] {
+    color: var(--text-primary);
+    background: rgba(122, 162, 247, 0.15);
+    border-color: rgba(122, 162, 247, 0.4);
+  }
+
+  .sheet-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .sheet-panel:not(:has(.workbook)) .sheet-info {
+    grid-template-columns: 1fr;
+  }
+
+  .sheet-subtitle {
+    font-style: italic;
+    color: var(--text-secondary);
+    margin: 0.2rem 0 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .sheet-tempo {
+    font-size: 0.875rem;
+    color: var(--terminal-yellow);
+    margin-bottom: 0.75rem;
+  }
+
+  .sheet-focus {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  .workbook {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .workbook-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+  }
+
+  .workbook-reset {
+    font: inherit;
+    font-size: 0.75rem;
+    text-transform: none;
+    letter-spacing: 0;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .workbook-reset:hover {
+    color: var(--terminal-red);
+  }
+
+  fieldset {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  legend {
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] {
+    accent-color: var(--terminal-green);
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  input[type="checkbox"]:checked + span {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+  }
+
+  .pdf-frame {
+    display: block;
+    width: 100%;
+    height: 85vh;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .pdf-actions {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .back-link {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    main {
+      padding: 2rem 1rem;
+    }
+
+    .routine {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .routine-block {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .routine-bar {
+      flex: none;
+      width: 3rem;
+      height: auto;
+      min-height: 2.25rem;
+      justify-content: center;
+      margin-bottom: 0;
+      padding: 0;
+    }
+
+    .phases,
+    .sheet-info {
+      grid-template-columns: 1fr;
+    }
+
+    /* Mobile browsers render embedded PDFs poorly, so hand off to the native viewer */
+    .pdf-frame {
+      display: none;
+    }
+
+    .pdf-actions {
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: center;
+    }
+
+    .pdf-open {
+      display: block;
+      padding: 0.9rem;
+      border-radius: 8px;
+      background: rgba(122, 162, 247, 0.12);
+      border: 1px solid rgba(122, 162, 247, 0.35);
+      color: var(--text-primary);
+    }
+
+    .back-link {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+</style>

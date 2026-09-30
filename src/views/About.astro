@@ -1,0 +1,284 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getContent, localizePath, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getContent(lang).about;
+---
+
+<BaseLayout title={t.title} lang={lang}>
+  <main>
+    <article class="about">
+      <header class="hero">
+        <img
+          src="/images/aboutme3.jpg"
+          alt={t.avatarAlt}
+          class="avatar"
+        />
+        <div class="hero-text">
+          <h1>{t.name}</h1>
+          <p class="subtitle">{t.subtitle}</p>
+        </div>
+      </header>
+
+      <section class="bio">
+        {t.bio.map((paragraph) => <p set:html={paragraph} />)}
+      </section>
+
+      <section class="timeline">
+        <h2>{t.timelineHeading}</h2>
+        <div class="timeline-entries">
+          {
+            t.timeline.map((entry) => (
+              <div class="entry">
+                <span class="date">{entry.date}</span>
+                <div class="content">
+                  <strong class={`highlight ${entry.highlight}`}>
+                    {entry.organization}
+                  </strong>
+                  <p>{entry.description}</p>
+                </div>
+              </div>
+            ))
+          }
+          <div class="timeline-arrow">
+            <span class="arrow-label">{t.timelineEnd}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="skills">
+        <h2>{t.skillsHeading}</h2>
+        {
+          t.skills.map((group) => (
+            <div class="skill-group">
+              <h3>{group.heading}</h3>
+              <p>{group.items}</p>
+            </div>
+          ))
+        }
+      </section>
+
+      <nav class="back-link">
+        <a href={localizePath("/", lang)}>{t.backLink}</a>
+      </nav>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding: 3rem 1.5rem;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .about {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .hero {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 30px rgba(122, 162, 247, 0.2);
+  }
+
+  .hero-text h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .bio p {
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+  }
+
+  h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .highlight {
+    font-weight: 500;
+  }
+
+  .cornell {
+    color: #b31b1b;
+  }
+
+  .wasabi {
+    color: #1bc01b;
+  }
+
+  .amazon {
+    color: #ff9900;
+  }
+
+  .ey {
+    color: #ffe600;
+  }
+
+  .valon {
+    color: #48a3ff;
+  }
+
+  .timeline-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 20px;
+  }
+
+  /* Vertical timeline line */
+  .timeline-entries::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 40px;
+    width: 2px;
+    background: linear-gradient(
+      to bottom,
+      var(--accent) 0%,
+      var(--text-secondary) 100%
+    );
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1rem;
+    align-items: start;
+    position: relative;
+    padding: 0.75rem 0;
+  }
+
+  /* Timeline dot for each entry */
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 1rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent);
+    z-index: 1;
+    transition: all 0.2s ease;
+  }
+
+  .entry:hover::before {
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(122, 162, 247, 0.5);
+  }
+
+  /* Timeline arrow at the bottom */
+  .timeline-arrow {
+    position: relative;
+    padding: 1rem 0 0 0;
+    margin-left: -20px;
+  }
+
+  .timeline-arrow::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid var(--text-secondary);
+  }
+
+  .arrow-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-left: 20px;
+  }
+
+  .date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry .content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+  }
+
+  .skill-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .skill-group p {
+    color: var(--text-primary);
+  }
+
+  .back-link {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .back-link a {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .entry {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+      padding-left: 0;
+    }
+
+    .entry::before {
+      top: 0.85rem;
+    }
+
+    .date {
+      font-weight: 500;
+      color: var(--accent);
+    }
+  }
+</style>

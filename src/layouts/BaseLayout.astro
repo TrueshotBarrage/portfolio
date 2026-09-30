@@ -1,68 +1,91 @@
 ---
 import Analytics from "@vercel/analytics/astro";
+import LanguageToggle from "../components/LanguageToggle.astro";
+import { getContent, localizePath, LANGS, LANG_PREF_KEY, type Lang } from "../i18n";
 
 interface Props {
   title: string;
+  lang?: Lang;
   noindex?: boolean;
+  // False for pages without a counterpart in the other language (404)
+  translatable?: boolean;
 }
 
-const { title, noindex = false } = Astro.props;
+const { title, lang = "en", noindex = false, translatable = true } = Astro.props;
+const t = getContent(lang).layout;
+const otherLang: Lang = lang === "en" ? "ko" : "en";
+const otherPath = localizePath(Astro.url.pathname, otherLang);
+const absoluteUrl = (l: Lang) => new URL(localizePath(Astro.url.pathname, l), Astro.site).href;
+
+// Inter has no Hangul, so Korean pages also load Noto Sans KR
+const fontsHref =
+  "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600" +
+  (lang === "ko" ? "&family=Noto+Sans+KR:wght@300;400;500;600" : "") +
+  "&display=swap";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="David Kim" />
+    <meta name="description" content={t.description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon_sharpened_bold.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href={fontsHref} rel="stylesheet" />
+    {
+      translatable && (
+        <>
+          {LANGS.map((l) => (
+            <link rel="alternate" hreflang={l} href={absoluteUrl(l)} />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={absoluteUrl("en")} />
+          {/* A saved language choice wins over the URL. Runs before paint to avoid a flash */}
+          <script
+            is:inline
+            define:vars={{ otherLang, otherPath, prefKey: LANG_PREF_KEY }}
+          >
+            try {
+              if (localStorage.getItem(prefKey) === otherLang) {
+                location.replace(otherPath + location.search + location.hash);
+              }
+            } catch {}
+          </script>
+        </>
+      )
+    }
     <title>{title}</title>
     <Analytics />
   </head>
   <body>
+    {translatable && <LanguageToggle lang={lang} otherPath={otherPath} />}
+
     <slot />
 
     <!-- Logo button -->
-    <button id="logo-btn" class="page-logo-btn" aria-label="About this logo">
+    <button id="logo-btn" class="page-logo-btn" aria-label={t.logoButtonLabel}>
       <img src="/favicon_white.png" alt="DK" class="page-logo" />
     </button>
 
     <!-- Logo modal -->
     <div id="logo-modal" class="modal-overlay" aria-hidden="true">
       <div class="modal-content">
-        <button id="modal-close" class="modal-close" aria-label="Close"
+        <button id="modal-close" class="modal-close" aria-label={t.close}
           >&times;</button
         >
         <img src="/favicon_white.png" alt="DK Logo" class="modal-logo" />
-        <h3>About this logo</h3>
-        <p>
-          This logo blends the early Christian <strong>ichthýs</strong> (fish symbol)
-          with my initials,
-          <strong>“DK”</strong>, woven into its form.
-        </p>
-        <p>
-          It reflects how my identity as a Christian is a foundational part of
-          who I am.
-        </p>
+        <h3>{t.logoTitle}</h3>
+        {t.logoParagraphs.map((p) => <p set:html={p} />)}
         <p>--</p>
         <p>
-          <i>
-            I have been crucified with Christ. It is no longer I who live, but
-            Christ who lives in me. And the life I now live in the flesh I live
-            by faith in the Son of God, who loved me and gave himself for me.
-          </i>
+          <i>{t.verse}</i>
         </p>
         <p>
-          <strong>Galatians 2:20 (ESV)</strong>
+          <strong>{t.verseRef}</strong>
         </p>
-        <a href="/gospel" class="gospel-link">What is the Gospel? →</a>
+        <a href={localizePath("/gospel", lang)} class="gospel-link">{t.gospelLink}</a>
       </div>
     </div>
   </body>
@@ -148,6 +171,7 @@ const { title, noindex = false } = Astro.props;
   html {
     font-family:
       "Inter",
+      "Noto Sans KR",
       -apple-system,
       BlinkMacSystemFont,
       sans-serif;
@@ -162,6 +186,11 @@ const { title, noindex = false } = Astro.props;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Keep Korean words intact when wrapping */
+  :lang(ko) {
+    word-break: keep-all;
   }
 
   a {

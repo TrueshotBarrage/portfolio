@@ -145,10 +145,18 @@ function prompt(path: string = '~'): string {
 }
 
 /**
+ * Page-specific values read from the code box's data attributes
+ */
+interface TerminalOptions {
+  aboutHref: string;
+  skipLabel: string;
+}
+
+/**
  * Navigation links data
  */
-const navLinks = [
-  { id: 'about-pl', text: 'about-me', href: '/about' },
+const getNavLinks = (aboutHref: string) => [
+  { id: 'about-pl', text: 'about-me', href: aboutHref },
   { id: 'github-pl', text: 'github', href: 'https://github.com/TrueshotBarrage', external: true },
   { id: 'linkedin-pl', text: 'linkedin', href: 'https://www.linkedin.com/in/davidkim2106/', external: true },
 ];
@@ -156,8 +164,8 @@ const navLinks = [
 /**
  * Generate clickable pseudo-links HTML
  */
-function getPseudoLinksHtml(): string {
-  return navLinks
+function getPseudoLinksHtml(aboutHref: string): string {
+  return getNavLinks(aboutHref)
     .map((link) => `<span class="pseudo-link" data-href="${link.href}" data-external="${link.external || false}">${link.text}</span>`)
     .join('\n') + '\n';
 }
@@ -211,10 +219,10 @@ function shouldShowSkipButton(): boolean {
 /**
  * Create and show the skip button
  */
-function createSkipButton(onSkip: () => void): HTMLButtonElement {
+function createSkipButton(label: string, onSkip: () => void): HTMLButtonElement {
   const button = document.createElement('button');
   button.id = 'skip-animation-btn';
-  button.textContent = 'Skip Animation';
+  button.textContent = label;
   button.addEventListener('click', () => {
     skipRequested = true;
     button.remove();
@@ -253,12 +261,17 @@ export async function initTerminal(codeBoxId: string): Promise<void> {
     console.error(`Terminal element #${codeBoxId} not found`);
     return;
   }
+
+  const options: TerminalOptions = {
+    aboutHref: codeBox.dataset.aboutHref ?? '/about',
+    skipLabel: codeBox.dataset.skipLabel ?? 'Skip Animation',
+  };
   
   // Check if we should offer skip option
   if (shouldShowSkipButton()) {
     const terminalWrapper = codeBox.closest('.terminal-wrapper');
     if (terminalWrapper) {
-      const skipBtn = createSkipButton(() => {
+      const skipBtn = createSkipButton(options.skipLabel, () => {
         // Animation will auto-fast-forward due to skipRequested flag
       });
       terminalWrapper.appendChild(skipBtn);
@@ -279,7 +292,7 @@ export async function initTerminal(codeBoxId: string): Promise<void> {
   // List files
   await writer(codeBox, prompt(), 1500);
   await typewriter(codeBox, 'ls -1\n', 40);
-  await writer(codeBox, getPseudoLinksHtml(), 800);
+  await writer(codeBox, getPseudoLinksHtml(options.aboutHref), 800);
   
   // Final prompt with cursor
   await writer(codeBox, '(Try clicking these!)\n', 300);

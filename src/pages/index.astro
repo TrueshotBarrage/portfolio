@@ -1,35 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Terminal from "../components/Terminal.astro";
+import Home from "../views/Home.astro";
 ---
 
-<BaseLayout title="David Kim">
-  <main>
-    <Terminal />
-  </main>
-  <footer>
-    <p>
-      © {new Date().getFullYear()} David Kim. All rights reserved. Built with
-      <a href="https://astro.build/" target="_blank" rel="noopener noreferrer">
-        Astro</a
-      >.
-    </p>
-  </footer>
-</BaseLayout>
-
-<style>
-  main {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
-
-  footer {
-    padding: 1.5rem;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-  }
-</style>
+<Home lang="en" />

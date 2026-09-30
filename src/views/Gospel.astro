@@ -1,0 +1,146 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getContent, localizePath, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getContent(lang).gospel;
+const emailHref = `mailto:heydavidkim7@gmail.com?subject=${encodeURIComponent(t.emailSubject)}`;
+---
+
+<BaseLayout title={t.title} lang={lang}>
+  <main>
+    <article class="gospel">
+      <header>
+        <h1>{t.heading}</h1>
+        <p class="subtitle">{t.subtitle}</p>
+      </header>
+
+      <section>
+        <p set:html={t.intro} />
+      </section>
+
+      {
+        t.sections.map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            <p set:html={section.body} />
+            <blockquote>
+              {section.quote}
+              <cite>{section.cite}</cite>
+            </blockquote>
+          </section>
+        ))
+      }
+
+      <section class="learn-more">
+        <h2>{t.learnMoreHeading}</h2>
+        <ul>
+          <li>
+            <a href={emailHref}>{t.emailLink}</a>
+          </li>
+          <li>
+            <a href="https://www.desiringgod.org/topics/the-gospel/articles" target="_blank" rel="noopener noreferrer">
+              {t.articlesLink}
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <nav class="back-link">
+        <a href={localizePath("/", lang)}>{t.backLink}</a>
+      </nav>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding: 3rem 1.5rem;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .gospel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  section p {
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+
+  blockquote {
+    margin-top: 1rem;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+
+  blockquote cite {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-style: normal;
+    color: var(--text-secondary);
+  }
+
+  .back-link {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .back-link a {
+    font-size: 0.9rem;
+  }
+
+  .learn-more ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .learn-more li a {
+    display: block;
+    padding: 0.75rem 1rem;
+    background: rgba(122, 162, 247, 0.08);
+    border: 1px solid rgba(122, 162, 247, 0.2);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .learn-more li a:hover {
+    background: rgba(122, 162, 247, 0.15);
+    opacity: 1;
+  }
+</style>

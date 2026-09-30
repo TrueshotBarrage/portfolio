@@ -1,8 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getContent } from "../i18n";
+
+// Vercel serves this one page for every missing path, so the script picks the
+// language from the URL. The terminal itself stays English.
+const copy = { en: getContent("en").notFound, ko: getContent("ko").notFound };
 ---
 
-<BaseLayout title="404 — Page Not Found | David Kim">
+<BaseLayout title="404 — Page Not Found | David Kim" translatable={false}>
   <main>
     <div class="error-terminal">
       <div class="terminal-header">
@@ -55,8 +60,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
 
     <a href="/" class="home-link" id="home-link">
-      <span class="arrow">←</span> Return to home
+      <span class="arrow">←</span> <span id="home-link-label">{copy.en.returnHome}</span>
     </a>
+    <script type="application/json" id="not-found-copy" set:html={JSON.stringify(copy)} />
   </main>
 </BaseLayout>
 
@@ -66,7 +72,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     { path: '/', name: 'home' },
     { path: '/about', name: 'about' },
     { path: '/gospel', name: 'gospel' },
-  ];
+  ] as const;
+
+  interface NotFoundCopy {
+    returnHome: string;
+    goTo: string;
+    homeSuggestion: string;
+    pages: Record<'about' | 'gospel', string>;
+  }
+
+  const KO_PREFIX = /^\/ko(?=\/|$)/;
 
   // Detect browser for personalized prompt
   function getBrowserName(): string {
@@ -145,20 +160,38 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     if (errorPathEl) errorPathEl.textContent = attemptedPath;
     
     // Find and display suggestion
-    const bestMatch = findBestMatch(attemptedPath);
+    // Match against the path without its /ko prefix, then link to the same language
+    const isKorean = KO_PREFIX.test(attemptedPath);
+    const copy: NotFoundCopy = JSON.parse(
+      document.getElementById('not-found-copy')?.textContent ?? '{}',
+    )[isKorean ? 'ko' : 'en'];
+    const localize = (path: string) =>
+      isKorean ? (path === '/' ? '/ko' : `/ko${path}`) : path;
+
+    const homeLink = document.getElementById('home-link') as HTMLAnchorElement;
+    const homeLabel = document.getElementById('home-link-label');
+    if (isKorean) {
+      document.documentElement.lang = 'ko';
+      homeLink.href = localize('/');
+      if (homeLabel) homeLabel.textContent = copy.returnHome;
+    }
+
+    const bestMatch = findBestMatch(attemptedPath.replace(KO_PREFIX, '') || '/');
     const suggestionLine = document.getElementById('suggestion-line');
     const suggestionLink = document.getElementById('suggestion-link') as HTMLAnchorElement;
-    const homeLink = document.getElementById('home-link') as HTMLAnchorElement;
     
     if (bestMatch && suggestionLine && suggestionLink) {
       suggestionLine.style.display = 'block';
-      suggestionLink.href = bestMatch.path;
-      suggestionLink.textContent = bestMatch.path === '/' ? '/ (home)' : bestMatch.path;
+      const suggestedPath = localize(bestMatch.path);
+      suggestionLink.href = suggestedPath;
+      suggestionLink.textContent =
+        bestMatch.path === '/' ? `${suggestedPath} ${copy.homeSuggestion}` : suggestedPath;
       
       // Also update the home link to suggest the best match
-      if (homeLink && bestMatch.path !== '/') {
-        homeLink.href = bestMatch.path;
-        homeLink.innerHTML = `<span class="arrow">←</span> Go to ${bestMatch.name}`;
+      if (homeLink && homeLabel && bestMatch.name !== 'home') {
+        homeLink.href = suggestedPath;
+        const pageName = copy.pages[bestMatch.name as keyof NotFoundCopy['pages']];
+        homeLabel.textContent = copy.goTo.replace('{page}', pageName);
       }
     }
   }
